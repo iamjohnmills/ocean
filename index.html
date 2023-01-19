@@ -14,17 +14,17 @@
       .loading { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 30px; font-family: sans-serif; }
       .loading:after { content: ''; flex-shrink: 0; box-sizing: border-box; width: 60px; height: 60px; border-radius: 50%; border-top: 4px solid rgba(255,255,255,0.4); border-right: 2px solid transparent; animation: spin .6s linear infinite; }
       .cursor { filter: url("#turbulence"); z-index: 1; transform-origin: 100% 50%; position: absolute; background-size: 100%; }
-      .cursor.clowntrigger { background-image: url(clowntrigger.png); margin-left: -250px; margin-top: -60px; width: 250px; height: 120px; }
-      .cursor.clownfish { background-image: url(clownfish.png); margin-left: -150px; margin-top: -43px; width: 150px; height: 85px; }
-      .cursor.tang { background-image: url(tang.png); margin-left: -180px; margin-top: -53px; width: 180px; height: 105px; }
-      .cursor.triggerfish { background-image: url(triggerfish.png); margin-left: -250px; margin-top: -62px; width: 250px; height: 123px; }
-      .cursor.lionfish { background-image: url(lionfish.png); margin-left: -200px; margin-top: -85px; width: 200px; height: 170px; }
-      .cursor.goby { background-image: url(goby.png); margin-left: -120px; margin-top: -28px; width: 120px; height: 55px; }
-      .whale { filter: url("#turbulence") url(#blur); opacity: 0.5; background-image: url(whale.png); width: 1200px; height: 373px; background-size: 100%; mix-blend-mode: soft-light; zoom: 2; position: absolute; top: -30px; left: 100%;}
-      .background { mix-blend-mode: color-dodge; position: absolute; left: 0; top: 0; right: 0; bottom: 0; filter: url("#turbulence") blur(3px); background: url(coral.png) center bottom repeat-x; background-size: 125%; }
+      .cursor.clowntrigger { background-image: url(assets/clowntrigger.png); margin-left: -250px; margin-top: -60px; width: 250px; height: 120px; }
+      .cursor.clownfish { background-image: url(assets/clownfish.png); margin-left: -150px; margin-top: -43px; width: 150px; height: 85px; }
+      .cursor.tang { background-image: url(assets/tang.png); margin-left: -180px; margin-top: -53px; width: 180px; height: 105px; }
+      .cursor.triggerfish { background-image: url(assets/triggerfish.png); margin-left: -250px; margin-top: -62px; width: 250px; height: 123px; }
+      .cursor.lionfish { background-image: url(assets/lionfish.png); margin-left: -200px; margin-top: -85px; width: 200px; height: 170px; }
+      .cursor.goby { background-image: url(assets/goby.png); margin-left: -120px; margin-top: -28px; width: 120px; height: 55px; }
+      .whale { filter: url("#turbulence") url(#blur); opacity: 0.5; background-image: url(assets/whale.png); width: 1200px; height: 373px; background-size: 100%; mix-blend-mode: soft-light; zoom: 2; position: absolute; top: -30px; left: 100%;}
+      .background { mix-blend-mode: color-dodge; position: absolute; left: 0; top: 0; right: 0; bottom: 0; filter: url("#turbulence") blur(3px); background: url(assets/coral.png) center bottom repeat-x; background-size: 125%; }
       .background:before { content: ''; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background: #243564; mix-blend-mode: color; }
       .foreground { z-index: 2; position: absolute; left: 0; top: 0; right: 0; bottom: 0;  }
-      .foreground:before { content: ''; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background: url(coral.png) right bottom repeat-x; background-size: 80%; }
+      .foreground:before { content: ''; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background: url(assets/coral.png) right bottom repeat-x; background-size: 80%; }
       @keyframes bubble { 0% { opacity: 1; } 25% { margin-left: var(--spread-left); } 50% { } 75% { margin-left: var(--spread-right); opacity: 0;  } 100% { top: -10px; } }
       .bubble { --size: 8px; --spread-left: -10px; --spread-right: -10px; animation: bubble 1s ease-in-out; opacity: 0; mix-blend-mode: soft-light; position: absolute; z-index: 3; width: var(--size); height: var(--size); border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 50%); }
     </style>
@@ -73,7 +73,7 @@
         }
         async preloadImages(){
           const loading = createNode({ root: this.root, tag: 'div', className: `loading` });
-          for(const fish of this.fish) await loadImage(`${fish}.png`);
+          for(const fish of this.fish) await loadImage(`assets/${fish}.png`);
           loading.remove();
         }
         handleKeyDown(event){
