@@ -50,6 +50,7 @@
         constructor(){
           document.addEventListener('DOMContentLoaded',this.init.bind(this));
           window.addEventListener('mousemove',this.handleMouseMove.bind(this));
+          window.addEventListener('touchmove',this.handleMouseMove.bind(this));
           window.addEventListener('keydown',this.handleKeyDown.bind(this));
           window.addEventListener('click',this.handleClick.bind(this));
           this.els = {};
@@ -66,8 +67,10 @@
           this.els.whale = createNode({ root: this.root, tag: 'div', className: `whale` })
           this.els.background = createNode({ root: this.root, tag: 'div', className: `background` })
           this.els.foreground = createNode({ root: this.root, tag: 'div', className: `foreground` })
-          this.clientX = 0;
-          this.clientY = 0;
+          this.angle = 0;
+          this.scaleX = 1;
+          this.clientX = window.innerWidth / 2;
+          this.clientY = window.innerHeight / 2;
           this.interval = window.requestAnimationFrame(this.render.bind(this));
         }
         async preloadImages(){
@@ -86,12 +89,10 @@
           const rect = this.els.cursor.getBoundingClientRect();
           const origin_x = rect.left + (rect.width / 2);
           const origin_y = rect.top + (rect.height / 2);
-          let angle = Math.atan2(event.clientY - origin_y, event.clientX - origin_x);
-          angle *= 180 / Math.PI;
-          let scale_x = Math.abs(angle) >= 90 ? -1 : 1;
-          angle = scale_x === 1 ? angle : (angle + 180) % 360;
-          this.els.cursor.style.cssText = `left:${event.clientX}px;top:${event.clientY}px;transform:rotate(${angle}deg) scaleX(${scale_x})`;
-          this.els.background.style.backgroundPosition = `${event.clientX / window.innerWidth * 15}px bottom`;
+          this.angle = Math.atan2(event.clientY - origin_y, event.clientX - origin_x);
+          this.angle *= 180 / Math.PI;
+          this.scaleX = Math.abs(this.angle) >= 90 ? -1 : 1;
+          this.angle = this.scaleX === 1 ? this.angle : (this.angle + 180) % 360;
           this.clientX = event.clientX;
           this.clientY = event.clientY;
         }
@@ -105,9 +106,12 @@
           setTimeout(() => { bubble.remove() },1000)
         }
         render(){
-          const rect = this.els.whale.getBoundingClientRect();
-          const left = rect.left - 0.15 > -rect.width ? rect.left - 0.15 : rect.width + 100;
-          this.els.whale.style.left = `${left}px`
+          const rect_whale = this.els.whale.getBoundingClientRect();
+          const left = rect_whale.left - 0.15 > -rect_whale.width ? rect_whale.left - 0.15 : rect_whale.width + 100;
+          this.els.whale.style.left = `${left}px`;
+
+          this.els.cursor.style.cssText = `left:${this.clientX}px;top:${this.clientY}px;transform:rotate(${this.angle}deg) scaleX(${this.scaleX})`;
+          this.els.background.style.backgroundPosition = `${this.clientX / window.innerWidth * 15}px bottom`;
           this.interval = window.requestAnimationFrame(this.render.bind(this));
         }
       }
