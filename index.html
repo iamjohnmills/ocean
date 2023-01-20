@@ -19,11 +19,12 @@
       .cursor.triggerfish { background-image: url(assets/triggerfish.png); margin-left: -250px; margin-top: -62px; width: 250px; height: 123px; }
       .cursor.lionfish { background-image: url(assets/lionfish.png); margin-left: -200px; margin-top: -85px; width: 200px; height: 170px; }
       .cursor.goby { background-image: url(assets/goby.png); margin-left: -120px; margin-top: -28px; width: 120px; height: 55px; }
-      .whale { filter: url("#turbulence") url(#blur); opacity: 0.5; background-image: url(assets/whale.png); background-repeat: no-repeat; width: 1200px; height: 373px; background-size: 100%; mix-blend-mode: soft-light; zoom: 2; position: absolute; top: -30px; left: 100%;}
-      .background { mix-blend-mode: color-dodge; position: absolute; left: 0; top: 0; right: 0; bottom: 0; filter: url("#turbulence") blur(3px); background: url(assets/coral.png) center bottom repeat-x; background-size: 125%; }
+      @keyframes whale_swim { 0% { left: 100%; top: -30px; } 25% { top: 30px; } 50% { top: -100px; transform: rotate(5deg); } 75% { top: 30px; transform: rotate(-10deg); } 100% { left: -1200px; top: -30px;  } }
+      .whale { animation: whale_swim 30s ease-in-out infinite; filter: url(#blur); opacity: 0.5; background-image: url(assets/whale.png); background-repeat: no-repeat; width: 1200px; height: 373px; background-size: 100%; mix-blend-mode: soft-light; zoom: 2; position: absolute; top: -30px; left: 100%;}
+      .background { mix-blend-mode: color-dodge; position: absolute; left: 0; top: 0; right: 0; bottom: 0; filter: url("#turbulence") blur(2px); background: url(assets/coral.png) center bottom repeat-x; background-size: 225vh; }
       .background:before { content: ''; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background: #243564; mix-blend-mode: color; }
       .foreground { z-index: 2; position: absolute; left: 0; top: 0; right: 0; bottom: 0;  }
-      .foreground:before { content: ''; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background: url(assets/coral.png) right bottom repeat-x; background-size: 80%; }
+      .foreground:before { content: ''; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background: url(assets/coral.png) center bottom repeat-x; background-size: 130vh; }
       @keyframes bubble { 0% { opacity: 1; } 25% { margin-left: var(--spread-left); } 50% { } 75% { margin-left: var(--spread-right); opacity: 0;  } 100% { top: -10px; } }
       .bubble { --size: 8px; --spread-left: -10px; --spread-right: -10px; animation: bubble 1s ease-in-out; opacity: 0; mix-blend-mode: soft-light; position: absolute; z-index: 3; width: var(--size); height: var(--size); border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 50%); }
     </style>
@@ -89,10 +90,12 @@
           const rect = this.els.cursor.getBoundingClientRect();
           const origin_x = rect.left + (rect.width / 2);
           const origin_y = rect.top + (rect.height / 2);
-          this.angle = Math.atan2(event.pageY - origin_y, event.pageX - origin_x);
-          this.angle *= 180 / Math.PI;
-          this.scaleX = Math.abs(this.angle) >= 90 ? -1 : 1;
-          this.angle = this.scaleX === 1 ? this.angle : (this.angle + 180) % 360;
+          let angle = Math.atan2(event.pageY - origin_y, event.pageX - origin_x);
+          angle *= 180 / Math.PI;
+          const scaleX = Math.abs(angle) >= 90 ? -1 : 1;
+          angle = scaleX === 1 ? angle : (angle + 180) % 360;
+          this.els.cursor.style.cssText = `left:${event.pageX}px;top:${event.pageY}px;transform:rotate(${angle}deg) scaleX(${scaleX})`;
+          this.els.background.style.backgroundPosition = `${event.pageX / window.innerWidth * 15}px bottom`;
           this.pageX = event.pageX;
           this.pageY = event.pageY;
         }
@@ -106,12 +109,10 @@
           setTimeout(() => { bubble.remove() },1000)
         }
         render(){
-          const rect_whale = this.els.whale.getBoundingClientRect();
-          const left = rect_whale.left - 0.15 > -rect_whale.width ? rect_whale.left - 0.15 : rect_whale.width + 100;
-          this.els.whale.style.left = `${left}px`;
+          // const rect_whale = this.els.whale.getBoundingClientRect();
+          // const left = rect_whale.left - 0.15 > -rect_whale.width ? rect_whale.left - 0.15 : rect_whale.width + 100;
+          // this.els.whale.style.left = `${left}px`;
 
-          this.els.cursor.style.cssText = `left:${this.pageX}px;top:${this.pageY}px;transform:rotate(${this.angle}deg) scaleX(${this.scaleX})`;
-          this.els.background.style.backgroundPosition = `${this.pageX / window.innerWidth * 15}px bottom`;
           this.interval = window.requestAnimationFrame(this.render.bind(this));
         }
       }
