@@ -68,11 +68,7 @@
           this.els.whale = createNode({ root: this.root, tag: 'div', className: `whale` })
           this.els.background = createNode({ root: this.root, tag: 'div', className: `background` })
           this.els.foreground = createNode({ root: this.root, tag: 'div', className: `foreground` })
-          this.angle = 0;
-          this.scaleX = 1;
-          this.pageX = window.innerWidth / 2;
-          this.pageY = window.innerHeight / 2;
-          this.interval = window.requestAnimationFrame(this.render.bind(this));
+          this.els.cursor.style.cssText = `left:${window.innerWidth / 2}px;top:${window.innerHeight / 2}px;`;
         }
         async preloadImages(){
           const loading = createNode({ root: this.root, tag: 'div', className: `loading` });
@@ -96,11 +92,9 @@
           angle = scaleX === 1 ? angle : (angle + 180) % 360;
           this.els.cursor.style.cssText = `left:${event.pageX}px;top:${event.pageY}px;transform:rotate(${angle}deg) scaleX(${scaleX})`;
           this.els.background.style.backgroundPosition = `${event.pageX / window.innerWidth * 15}px bottom`;
-          this.pageX = event.pageX;
-          this.pageY = event.pageY;
         }
         handleClick(event){
-          const bubble = createNode({ root: this.root, tag: 'div', className: 'bubble', style: { left: `${this.pageX}px`, top: `${this.pageY}px` } });
+          const bubble = createNode({ root: this.root, tag: 'div', className: 'bubble', style: { left: `${event.pageX}px`, top: `${event.pageY}px` } });
           const size = Math.floor(Math.random() * 10 + 3);
           const spread = Math.floor(Math.random() * 20 + 5) * (Math.random() < 0.5 ? 1 : -1);
           bubble.style.setProperty('--size', `${size}px`);
@@ -108,13 +102,12 @@
           bubble.style.setProperty('--spread-right', `${spread}px`);
           setTimeout(() => { bubble.remove() },1000)
         }
-        render(){
+        // render(){
           // const rect_whale = this.els.whale.getBoundingClientRect();
           // const left = rect_whale.left - 0.15 > -rect_whale.width ? rect_whale.left - 0.15 : rect_whale.width + 100;
           // this.els.whale.style.left = `${left}px`;
-
-          this.interval = window.requestAnimationFrame(this.render.bind(this));
-        }
+          // this.interval = window.requestAnimationFrame(this.render.bind(this));
+        // }
       }
       const app = new App();
     </script>
