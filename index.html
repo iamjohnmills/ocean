@@ -6,25 +6,23 @@
     <style media="screen">
       * { cursor: none; }
       html, body { height: 100%; margin: 0;  overflow: hidden; }
-      body { background: rgba(23,32,63); }
       body > svg { display: none; }
-      #root { width: 100%; height: 100%; overflow: hidden; position: relative;}
+      #root { width: 100%; height: 100%; background: rgba(23,32,63); overflow: hidden; position: relative;}
       @keyframes spin { to {transform: rotate(360deg) } }
       .loading { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 30px; font-family: sans-serif; }
       .loading:after { content: ''; flex-shrink: 0; box-sizing: border-box; width: 60px; height: 60px; border-radius: 50%; border-top: 4px solid rgba(255,255,255,0.4); border-right: 2px solid transparent; animation: spin .6s linear infinite; }
       .cursor { background-repeat: no-repeat; z-index: 1; transform-origin: 100% 50%; position: absolute; background-size: 100%; }
-      .cursor.clowntrigger { background-image: url(assets/clowntrigger.png); margin-left: -250px; margin-top: -60px; width: 250px; height: 120px; }
-      .cursor.clownfish { background-image: url(assets/clownfish.png); margin-left: -150px; margin-top: -42px; width: 150px; height: 84px; }
-      .cursor.tang { background-image: url(assets/tang.png); margin-left: -180px; margin-top: -53px; width: 180px; height: 105px; }
-      .cursor.triggerfish { background-image: url(assets/triggerfish.png); margin-left: -250px; margin-top: -62px; width: 250px; height: 123px; }
-      .cursor.lionfish { background-image: url(assets/lionfish.png); margin-left: -200px; margin-top: -85px; width: 200px; height: 170px; }
-      .cursor.goby { background-image: url(assets/goby.png); margin-left: -120px; margin-top: -28px; width: 120px; height: 55px; }
+      .cursor.clowntrigger { margin-left: -250px; margin-top: -60px; width: 250px; height: 120px; }
+      .cursor.clownfish { margin-left: -150px; margin-top: -42px; width: 150px; height: 84px; }
+      .cursor.tang { margin-left: -180px; margin-top: -53px; width: 180px; height: 105px; }
+      .cursor.triggerfish { margin-left: -250px; margin-top: -62px; width: 250px; height: 123px; }
+      .cursor.lionfish { margin-left: -200px; margin-top: -85px; width: 200px; height: 170px; }
+      .cursor.goby { margin-left: -120px; margin-top: -28px; width: 120px; height: 55px; }
       @keyframes whale_swim { 0% { left: 100%; top: -30px; } 25% { top: 30px; } 50% { top: -100px; transform: rotate(5deg); } 75% { top: 30px; transform: rotate(-10deg); } 100% { left: -1200px; top: -30px;  } }
-      .whale { animation: whale_swim 30s ease-in-out infinite; filter: url(#blur); opacity: 0.5; background-image: url(assets/whale.png); background-repeat: no-repeat; width: 1200px; height: 373px; background-size: 100%; mix-blend-mode: soft-light; zoom: 2; position: absolute; top: -30px; left: 100%;}
-      .background { mix-blend-mode: color-dodge; position: absolute; left: 0; top: 0; right: 0; bottom: 0; filter: url("#turbulence") blur(2px); background: url(assets/coral.png) center bottom repeat-x; background-size: 225vh; }
+      .whale { animation: whale_swim 30s ease-in-out infinite; filter: url(#blur); opacity: 0.5; background-repeat: no-repeat; width: 1200px; height: 373px; background-size: 100%; mix-blend-mode: soft-light; zoom: 2; position: absolute; top: -30px; left: 100%;}
+      .background { mix-blend-mode: color-dodge; position: absolute; left: 0; top: 0; right: 0; bottom: 0; filter: url("#turbulence") blur(2px); background: center bottom repeat-x; background-size: 225vh; }
       .background:before { content: ''; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background: #243564; mix-blend-mode: color; }
-      .foreground { z-index: 2; position: absolute; left: 0; top: 0; right: 0; bottom: 0;  }
-      .foreground:before { content: ''; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background: url(assets/coral.png) center bottom repeat-x; background-size: 130vh; }
+      .foreground { z-index: 2; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background: center bottom repeat-x; background-size: 130vh; }
       @keyframes bubble { 0% { opacity: 1; } 25% { margin-left: var(--spread-left); } 50% { } 75% { margin-left: var(--spread-right); opacity: 0;  } 100% { top: -10px; } }
       .bubble { --size: 8px; --spread-left: -10px; --spread-right: -10px; animation: bubble 1s ease-in-out; opacity: 0; mix-blend-mode: soft-light; position: absolute; z-index: 3; width: var(--size); height: var(--size); border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 50%); }
     </style>
@@ -55,6 +53,10 @@
           window.addEventListener('keydown',this.handleKeyDown.bind(this));
           window.addEventListener('click',this.handleClick.bind(this));
           this.els = {};
+          this.images = {
+            base: 'assets/',
+            filenames: ['coral.png','whale.png','clowntrigger.png','goby.png','triggerfish.png','clownfish.png','tang.png','lionfish.png']
+          }
           this.fish = ['clowntrigger','goby','triggerfish','clownfish','tang','lionfish'];
           this.current_fish = 'clowntrigger';
           this.interval = null;
@@ -64,15 +66,14 @@
           this.root = document.getElementById('root');
           this.root.innerHTML = ``;
           await this.preloadImages();
-          this.els.cursor = createNode({ root: this.root, tag: 'div', className: `cursor ${this.current_fish}` })
-          this.els.whale = createNode({ root: this.root, tag: 'div', className: `whale` })
-          this.els.background = createNode({ root: this.root, tag: 'div', className: `background` })
-          this.els.foreground = createNode({ root: this.root, tag: 'div', className: `foreground` })
-          this.els.cursor.style.cssText = `left:${window.innerWidth / 2}px;top:${window.innerHeight / 2}px;`;
+          this.els.cursor = createNode({ root: this.root, tag: 'div', className: `cursor ${this.current_fish}`, style: { backgroundImage: `url(${this.images.base}${this.current_fish}.png)`, left: `${window.innerWidth / 2}px`, top: `${window.innerHeight / 2}px` } })
+          this.els.whale = createNode({ root: this.root, tag: 'div', className: `whale`, style: { backgroundImage: `url(${this.images.base}whale.png)` } })
+          this.els.background = createNode({ root: this.root, tag: 'div', className: `background`, style: { backgroundImage: `url(${this.images.base}coral.png)` } })
+          this.els.foreground = createNode({ root: this.root, tag: 'div', className: `foreground`, style: { backgroundImage: `url(${this.images.base}coral.png)` } })
         }
         async preloadImages(){
           const loading = createNode({ root: this.root, tag: 'div', className: `loading` });
-          for(const fish of this.fish) await loadImage(`assets/${fish}.png`);
+          for(const filename of this.images.filenames) await loadImage(`${this.images.base}${filename}`);
           loading.remove();
         }
         handleKeyDown(event){
@@ -81,6 +82,7 @@
           this.current_fish = !!this.fish[previous+1] ? this.fish[previous+1] : this.fish[0];
           this.els.cursor.classList.remove(this.fish[previous]);
           this.els.cursor.classList.add(this.current_fish);
+          this.els.cursor.style.backgroundImage = `url(${this.images.base}${this.current_fish}.png)`;
         }
         handleMouseMove(event){
           const rect = this.els.cursor.getBoundingClientRect();
@@ -90,7 +92,9 @@
           angle *= 180 / Math.PI;
           const scaleX = Math.abs(angle) >= 90 ? -1 : 1;
           angle = scaleX === 1 ? angle : (angle + 180) % 360;
-          this.els.cursor.style.cssText = `left:${event.pageX}px;top:${event.pageY}px;transform:rotate(${angle}deg) scaleX(${scaleX})`;
+          this.els.cursor.style.left = `${event.pageX}px`;
+          this.els.cursor.style.top = `${event.pageY}px`;
+          this.els.cursor.style.transform = `rotate(${angle}deg) scaleX(${scaleX})`;
           this.els.background.style.backgroundPosition = `${event.pageX / window.innerWidth * 15}px bottom`;
         }
         handleClick(event){
