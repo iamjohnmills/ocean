@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <title>OCEAN</title>
     <style media="screen">
@@ -85,15 +86,17 @@
           this.els.cursor.style.backgroundImage = `url(${this.images.base}${this.current_fish}.png)`;
         }
         handleMouseMove(event){
+          let x = !!event.touches ? event.touches[0].clientX : event.clientX;
+          let y = !!event.touches ? event.touches[0].clientY : event.clientY;
           const rect = this.els.cursor.getBoundingClientRect();
           const origin_x = rect.left + (rect.width / 2);
           const origin_y = rect.top + (rect.height / 2);
-          let angle = Math.atan2(event.pageY - origin_y, event.pageX - origin_x);
+          let angle = Math.atan2(y - origin_y, x - origin_x);
           angle *= 180 / Math.PI;
           const scaleX = Math.abs(angle) >= 90 ? -1 : 1;
           angle = scaleX === 1 ? angle : (angle + 180) % 360;
-          this.els.cursor.style.left = `${event.pageX}px`;
-          this.els.cursor.style.top = `${event.pageY}px`;
+          this.els.cursor.style.left = `${x}px`;
+          this.els.cursor.style.top = `${y}px`;
           this.els.cursor.style.transform = `rotate(${angle}deg) scaleX(${scaleX})`;
           this.els.background.style.backgroundPosition = `${event.pageX / window.innerWidth * 15}px bottom`;
         }
